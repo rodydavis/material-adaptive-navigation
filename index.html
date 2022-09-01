@@ -1,13 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Lit App</title>
-    <script type="module" src="/src/my-element.ts"></script>
-  </head>
-  <body>
-    <my-element> </my-element>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://rodydavis.github.io/material-design-lite/css/mdl.min.css" />
+  <link rel="stylesheet" href="https://rodydavis.github.io/material-design-lite/css/icons.module.css" />
+  <title>Material Adaptive Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100vh;
+      font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    }
+  </style>
+  <script type="module" src="/src/adaptive-scaffold.ts"></script>
+</head>
+
+<body>
+  <adaptive-scaffold>
+    <span slot="title">Adaptive Demo</span>
+    <nav slot="navigation">
+      <a href="#/">
+        <label>Home</label>
+        <i class="material-icons">home</i>
+      </a>
+      <a href="#/about">
+        <label>About</label>
+        <i class="material-icons">info</i>
+      </a>
+      <a href="#/contact">
+        <label>Contact</label>
+        <i class="material-icons">contact_mail</i>
+      </a>
+    </nav>
+    <section>
+      <h2>Home</h2>
+      <p>Welcome to the home page!</p>
+    </section>
+  </adaptive-scaffold>
+</body>
+
 </html>
