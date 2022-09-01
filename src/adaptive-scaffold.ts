@@ -207,9 +207,9 @@ export class AdaptiveScaffold extends LitElement {
         //  Get the width of the window
         const width = window.innerWidth;
         //  Return the breakpoint based on the window width
-        if (width < 640) {
+        if (width < 720) {
             return Breakpoint.Small;
-        } else if (width < 1024) {
+        } else if (width < 1440) {
             return Breakpoint.Medium;
         } else {
             return Breakpoint.Large;
