@@ -34,8 +34,8 @@ export class AdaptiveScaffold extends LitElement {
       right: 20px;
     }
     .navigation-rail {
-        height: 100%;
-        box-sizing: border-box;
+      height: 100%;
+      box-sizing: border-box;
     }
   `;
 
@@ -162,17 +162,7 @@ export class AdaptiveScaffold extends LitElement {
         return html`
       <header class="top-app-bar small">
         <div class="title"><slot name="title"></slot></div>
-        <div class="actions">
-          <button class="icon button">
-            <i class="material-icons">info</i>
-          </button>
-          <button class="icon button">
-            <i class="material-icons">filter_list</i>
-          </button>
-          <button class="icon button">
-            <i class="material-icons">settings</i>
-          </button>
-        </div>
+        <slot name="actions"> </slot>
       </header>
     `;
     }
@@ -195,9 +185,12 @@ export class AdaptiveScaffold extends LitElement {
     }
 
     override firstUpdated() {
-        //  Listen for the window resize event
-        window.addEventListener("resize", this.onResize.bind(this));
-        //  Call the resize handler once to set the initial breakpoint
+        const breakpoints = [640, 1024];
+        // Listen for breakpoints with media query
+        breakpoints.forEach((breakpoint) => {
+            const query = window.matchMedia(`(min-width: ${breakpoint}px)`);
+            query.addEventListener("change", this.onResize.bind(this));
+        });
         this.onResize();
     }
 
