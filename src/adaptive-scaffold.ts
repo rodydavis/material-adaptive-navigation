@@ -24,8 +24,18 @@ export class AdaptiveScaffold extends LitElement {
       flex-direction: column;
     }
     .content {
-         box-sizing: border-box;
+      box-sizing: border-box;
       padding: 20px;
+      position: relative;
+    }
+    .fixed {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+    .navigation-rail {
+        height: 100%;
+        box-sizing: border-box;
     }
   `;
 
@@ -59,7 +69,10 @@ export class AdaptiveScaffold extends LitElement {
                 `
                 )}
             </nav>
-            <div class="content"><slot></slot></div>
+            <div class="content">
+              <div class="fixed"><slot name="fab"></slot></div>
+              <slot></slot>
+            </div>
           </main>
         `;
             case NavigationType.DrawerPinned:
@@ -79,20 +92,24 @@ export class AdaptiveScaffold extends LitElement {
             </div>
             <section class="column">
               ${this.getAppBar()}
-              <div class="content"><slot></slot></div>
+              <div class="content">
+                <div class="fixed"><slot name="fab"></slot></div>
+                <slot></slot>
+              </div>
             </section>
           </main>
         `;
             case NavigationType.NavigationRail:
                 return html`
           <main class="row">
-            <aside class="navigation-rail" style="min-height: 600px">
+            <aside class="navigation-rail">
+              <slot name="fab"></slot>
               <nav>
                 ${navItems.map(
                     (e) => html`
                     <input
                       type="radio"
-                      name="nav-rail"
+                      name="nav"
                       value=${e.href}
                       id=${e.href}
                     />
@@ -114,8 +131,11 @@ export class AdaptiveScaffold extends LitElement {
                 return html`
           <main class="column">
             ${this.getAppBar()}
-            <div class="content"><slot></slot></div>
-            <nav class="navigation-bar" style="min-width: 400px">
+            <div class="content">
+              <div class="fixed"><slot name="fab"></slot></div>
+              <slot></slot>
+            </div>
+            <nav class="navigation-bar">
               ${navItems.map(
                     (item) => html`
                   <input

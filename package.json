@@ -20,6 +20,7 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "@material/web": "^0.1.0-alpha.0",
     "lit": "^2.0.2"
   },
   "homepage": "https://rodydavis.github.io/lit-starter-ts/",
