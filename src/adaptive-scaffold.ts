@@ -5,7 +5,7 @@ export const tagName = "adaptive-scaffold";
 
 @customElement(tagName)
 export class AdaptiveScaffold extends LitElement {
-    static styles = css`
+  static styles = css`
     :host {
       font-family: Roboto, sans-serif;
     }
@@ -33,41 +33,45 @@ export class AdaptiveScaffold extends LitElement {
       bottom: 20px;
       right: 20px;
     }
+    .navigation-drawer {
+      position: relative;
+    }
     .navigation-rail {
       height: 100%;
       box-sizing: border-box;
     }
   `;
 
-    @state() breakpoint: Breakpoint = 0;
-    @property({ type: Boolean }) tabs = false;
+  @state() breakpoint: Breakpoint = 0;
+  @property({ type: Boolean }) tabs = false;
 
-    render() {
-        return html` ${this.getStyles()} ${this.renderNavigation()}`;
-    }
+  render() {
+    return html` ${this.getStyles()} ${this.renderNavigation()}`;
+  }
 
-    private renderNavigation() {
-        const navType = this.getNavigation();
-        const navItems = this.getNavItems();
-        switch (navType) {
-            case NavigationType.Tabs:
-                return html`
+  private renderNavigation() {
+    const navType = this.getNavigation();
+    const navItems = this.getNavItems();
+    switch (navType) {
+      case NavigationType.Tabs:
+        return html`
           <main class="column">
             ${this.getAppBar()}
             <nav class="tabs">
               ${navItems.map(
-                    (item) => html`
-                  <div class="tab">
+          (item) => html`
+                  <div class="tab" route=${item.href} @click=${this.onLink}>
                     <input
                       type="radio"
                       name="nav"
                       value=${item.href}
                       id=${item.href}
+                      ?checked=${item.selected}
                     />
                     <label for=${item.href}>${item.label}</label>
                   </div>
                 `
-                )}
+        )}
             </nav>
             <div class="content">
               <div class="fixed"><slot name="fab"></slot></div>
@@ -75,19 +79,19 @@ export class AdaptiveScaffold extends LitElement {
             </div>
           </main>
         `;
-            case NavigationType.DrawerPinned:
-                return html`
+      case NavigationType.DrawerPinned:
+        return html`
           <main class="row">
             <div class="navigation-drawer">
               <section>
                 ${navItems.map(
-                    (item) => html`
-                    <div class="list-tile">
+          (item) => html`
+                    <div class="list-tile" route=${item.href} @click=${this.onLink}>
                       <i class="leading material-icons">${item.icon}</i>
                       <span class="title">${item.label}</span>
                     </div>
                   `
-                )}
+        )}
               </section>
             </div>
             <section class="column">
@@ -99,26 +103,27 @@ export class AdaptiveScaffold extends LitElement {
             </section>
           </main>
         `;
-            case NavigationType.NavigationRail:
-                return html`
+      case NavigationType.NavigationRail:
+        return html`
           <main class="row">
             <aside class="navigation-rail">
               <slot name="fab"></slot>
               <nav>
                 ${navItems.map(
-                    (e) => html`
+          (e) => html`
                     <input
                       type="radio"
                       name="nav"
                       value=${e.href}
                       id=${e.href}
+                      ?checked=${e.selected}
                     />
-                    <label for=${e.href}>
+                    <label for=${e.href} route=${e.href} @click=${this.onLink}>
                       <i class="material-icons">${e.icon}</i>
                       <span>${e.label}</span>
                     </label>
                   `
-                )}
+        )}
               </nav>
             </aside>
             <section class="column">
@@ -127,8 +132,8 @@ export class AdaptiveScaffold extends LitElement {
             </section>
           </main>
         `;
-            case NavigationType.BottomNavigation:
-                return html`
+      case NavigationType.BottomNavigation:
+        return html`
           <main class="column">
             ${this.getAppBar()}
             <div class="content">
@@ -137,38 +142,47 @@ export class AdaptiveScaffold extends LitElement {
             </div>
             <nav class="navigation-bar">
               ${navItems.map(
-                    (item) => html`
+          (item) => html`
                   <input
                     type="radio"
                     name="bottom-nav-icons"
                     value=${item.href}
                     id=${item.href}
+                    ?checked=${item.selected}
                   />
-                  <label for=${item.href}>
+                  <label for=${item.href} route=${item.href} @click=${this.onLink}>
                     <i class="material-icons">${item.icon}</i>
                     <span>${item.label}</span>
                   </label>
                 `
-                )}
+        )}
             </nav>
           </main>
         `;
-            default:
-                return html`Drawer Hidden`;
-        }
+      default:
+        return html`Drawer Hidden`;
     }
+  }
 
-    private getAppBar() {
-        return html`
+  private onLink(e: Event) {
+    const target = e.target as HTMLElement;
+    const route = target.getAttribute("route");
+    if (route) {
+      window.location.href = route;
+    }
+  }
+
+  private getAppBar() {
+    return html`
       <header class="top-app-bar small">
         <div class="title"><slot name="title"></slot></div>
         <slot name="actions"> </slot>
       </header>
     `;
-    }
+  }
 
-    private getStyles() {
-        return html`
+  private getStyles() {
+    return html`
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -182,101 +196,103 @@ export class AdaptiveScaffold extends LitElement {
         href="https://rodydavis.github.io/material-design-lite/css/icons.module.css"
       />
     `;
+  }
+
+  override firstUpdated() {
+    const breakpoints = [720, 1440];
+    // Listen for breakpoints with media query
+    breakpoints.forEach((breakpoint) => {
+      const query = window.matchMedia(`(min-width: ${breakpoint}px)`);
+      query.addEventListener("change", this.onResize.bind(this));
+    });
+    this.onResize();
+  }
+
+  private onResize() {
+    //  Get the current breakpoint
+    const breakpoint = this.getBreakpoint();
+    //  If the breakpoint has changed, update the state
+    if (breakpoint !== this.breakpoint) {
+      this.breakpoint = breakpoint;
     }
+  }
 
-    override firstUpdated() {
-        const breakpoints = [640, 1024];
-        // Listen for breakpoints with media query
-        breakpoints.forEach((breakpoint) => {
-            const query = window.matchMedia(`(min-width: ${breakpoint}px)`);
-            query.addEventListener("change", this.onResize.bind(this));
-        });
-        this.onResize();
+  private getBreakpoint() {
+    //  Get the width of the window
+    const width = window.innerWidth;
+    //  Return the breakpoint based on the window width
+    if (width < 720) {
+      return Breakpoint.Small;
+    } else if (width < 1440) {
+      return Breakpoint.Medium;
+    } else {
+      return Breakpoint.Large;
     }
+  }
 
-    private onResize() {
-        //  Get the current breakpoint
-        const breakpoint = this.getBreakpoint();
-        //  If the breakpoint has changed, update the state
-        if (breakpoint !== this.breakpoint) {
-            this.breakpoint = breakpoint;
-        }
+  private getNavigation() {
+    const navLength = this.getNavItems().length;
+
+    // Check if the navigation is tabs
+    if (this.tabs) return NavigationType.Tabs;
+
+    // Check if there are more than 2 navigation items
+    if (navLength >= 2 && navLength <= 5) {
+      switch (this.breakpoint) {
+        case Breakpoint.Small:
+          return NavigationType.BottomNavigation;
+        case Breakpoint.Medium:
+          return NavigationType.NavigationRail;
+        case Breakpoint.Large:
+          return NavigationType.DrawerPinned;
+      }
     }
+    // Otherwise, return the default navigation type
+    return NavigationType.DrawerHidden;
+  }
 
-    private getBreakpoint() {
-        //  Get the width of the window
-        const width = window.innerWidth;
-        //  Return the breakpoint based on the window width
-        if (width < 720) {
-            return Breakpoint.Small;
-        } else if (width < 1440) {
-            return Breakpoint.Medium;
-        } else {
-            return Breakpoint.Large;
-        }
+  private getNavItems() {
+    const results: NavigationItem[] = [];
+    const nav = this.querySelector("nav")!;
+    for (const item of Array.from(nav.children)) {
+      const label = item.querySelector("label");
+      const icon = item.querySelector("i");
+      const href = item.getAttribute("href") ?? "";
+      const selected = item.getAttribute("selected") !== null;
+      results.push({
+        href,
+        selected,
+        label: label?.textContent ?? "",
+        icon: icon?.textContent ?? "",
+      });
     }
-
-    private getNavigation() {
-        const navLength = this.getNavItems().length;
-
-        // Check if the navigation is tabs
-        if (this.tabs) return NavigationType.Tabs;
-
-        // Check if there are more than 2 navigation items
-        if (navLength >= 2 && navLength <= 5) {
-            switch (this.breakpoint) {
-                case Breakpoint.Small:
-                    return NavigationType.BottomNavigation;
-                case Breakpoint.Medium:
-                    return NavigationType.NavigationRail;
-                case Breakpoint.Large:
-                    return NavigationType.DrawerPinned;
-            }
-        }
-        // Otherwise, return the default navigation type
-        return NavigationType.DrawerHidden;
-    }
-
-    private getNavItems() {
-        const results: NavigationItem[] = [];
-        const nav = this.querySelector("nav")!;
-        for (const item of Array.from(nav.children)) {
-            const label =
-                item.querySelector("label")!.textContent ?? item.textContent ?? "";
-            const href = item.getAttribute("href") ?? "";
-            const icon = item.querySelector("i")?.textContent ?? "";
-            results.push({
-                href,
-                label,
-                icon,
-            });
-        }
-        return results;
-    }
+    return results;
+  }
 }
 
 enum Breakpoint {
-    Small,
-    Medium,
-    Large,
+  Small,
+  Medium,
+  Large,
 }
 
 enum NavigationType {
-    DrawerPinned,
-    DrawerHidden,
-    BottomNavigation,
-    NavigationRail,
-    Tabs,
+  DrawerPinned,
+  DrawerHidden,
+  BottomNavigation,
+  NavigationRail,
+  Tabs,
 }
 
 interface NavigationItem {
-    href: string;
-    label: string;
-    icon?: string;
+  href: string;
+  label: string;
+  icon: string;
+  selected: boolean;
 }
 
 declare global {
-    interface HTMLElementTagNameMap {
-        [tagName]: AdaptiveScaffold;
-    }
+  interface HTMLElementTagNameMap {
+    [tagName]: AdaptiveScaffold;
+  }
 }
