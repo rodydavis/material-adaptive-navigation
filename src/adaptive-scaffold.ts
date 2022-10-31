@@ -109,21 +109,7 @@ export class AdaptiveScaffold extends LitElement {
             <aside class="navigation-rail">
               <slot name="fab"></slot>
               <nav>
-                ${navItems.map(
-          (e) => html`
-                    <input
-                      type="radio"
-                      name="nav"
-                      value=${e.href}
-                      id=${e.href}
-                      ?checked=${e.selected}
-                    />
-                    <label for=${e.href} route=${e.href} @click=${this.onLink}>
-                      <i class="material-icons">${e.icon}</i>
-                      <span>${e.label}</span>
-                    </label>
-                  `
-        )}
+                ${navItems.map((e) => this.buildNavIcon({ ...e, group: "side-nav" }))}
               </nav>
             </aside>
             <section class="column">
@@ -141,27 +127,21 @@ export class AdaptiveScaffold extends LitElement {
               <slot></slot>
             </div>
             <nav class="navigation-bar">
-              ${navItems.map(
-          (item) => html`
-                  <input
-                    type="radio"
-                    name="bottom-nav-icons"
-                    value=${item.href}
-                    id=${item.href}
-                    ?checked=${item.selected}
-                  />
-                  <label for=${item.href} route=${item.href} @click=${this.onLink}>
-                    <i class="material-icons">${item.icon}</i>
-                    <span>${item.label}</span>
-                  </label>
-                `
-        )}
+              ${navItems.map((e) => this.buildNavIcon({ ...e, group: "bottom-nav-icons" }))}
             </nav>
           </main>
         `;
       default:
         return html`Drawer Hidden`;
     }
+  }
+
+  private buildNavIcon({ icon, label, href, group, selected }: { icon: string, label: string, href: string, group: string, selected: boolean }) {
+    return html`<input type="radio" name=${group} value=${href} id=${href} ?checked=${selected} />
+      <label class="navigation-icon" for=${href} route=${href} @click=${this.onLink}>
+        <i class="material-icons">${icon}</i>
+        <span>${label}</span>
+      </label>`;
   }
 
   private onLink(e: Event) {
